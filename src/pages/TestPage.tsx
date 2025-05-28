@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
+import { VocabularyService } from "../services/supabase/vocabularyService";
 
-import "./App.css";
-import { VocabularyService } from "./services/supabase/vocabularyService";
-
-function App() {
+export default function TestPage() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const loadVocabularyBooks = async () => {
@@ -26,5 +24,3 @@ function App() {
 
   return <div>{isLoading ? "로딩중" : "완료"}</div>;
 }
-
-export default App;
