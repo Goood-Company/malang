@@ -2,11 +2,11 @@
 export interface User {
   id: string;
   social_id: string;
-  provider: "google" | "apple";
+  provider: "google" | "apple" | "kakao";
   created_at: string;
 }
 
-export interface VocabularyBook {
+export interface Book {
   id: string;
   title: string;
   description: string | null;
@@ -33,37 +33,49 @@ export interface Meaning {
   created_at: string;
 }
 
-export interface VocabularyBookWord {
+export interface BookWord {
   id: string;
-  vocabulary_book_id: string;
+  book_id: string;
   word_id: string;
   order: number;
   created_at: string;
 }
 
-export interface UserVocabularyBook {
+export interface UserBook {
   id: string;
   user_id: string;
-  vocabulary_book_id: string;
+  book_id: string;
   selected_at: string;
 }
 
 export interface UserWordProgress {
   id: string;
   user_id: string;
-  vocabulary_book_id: string;
-  // 추가 학습 관련 필드들이 필요할 수 있습니다
+  book_id: string;
+  word_id: string;
+  phase: string | null;
+  last_seen_at: string | null;
+  wrong_count: number;
+  is_marked_difficult: boolean;
 }
 
 // 조합된 타입들
-export interface WordWithMeanings extends Word {
+export interface WordWithMeaningList extends Word {
   meanings: Meaning[];
 }
 
-export interface VocabularyBookWithWords extends VocabularyBook {
-  words: WordWithMeanings[];
+export interface BookWithWordList extends Book {
+  words: WordWithMeaningList[];
 }
 
-export interface VocabularyBookSummary extends VocabularyBook {
+export interface BookSummary extends Book {
   word_count: number;
+}
+
+export interface BookWithWordCount extends Book {
+  book_words: { count: number }[];
+}
+
+export interface UserBookWithWordCount {
+  books: BookWithWordCount;
 }
