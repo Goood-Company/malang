@@ -16,6 +16,13 @@ import { useState } from "react";
 import Modal from "@/components/ui/modal";
 import Button from "@/components/ui/button";
 import BottomSheet from "@/components/ui/bottom-sheet";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function TestPage() {
   const [showModal, setShowModal] = useState(false);
@@ -88,7 +95,18 @@ export default function TestPage() {
         </div>
       </ScrollArea>
 
-      <Input className="mt-4" />
+      <Input className="mt-4 mb-4" />
+
+      <Select>
+        <SelectTrigger className="w-[180px]">
+          <SelectValue placeholder="Theme" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="light">Light</SelectItem>
+          <SelectItem value="dark">Dark</SelectItem>
+          <SelectItem value="system">System</SelectItem>
+        </SelectContent>
+      </Select>
     </div>
   );
 }

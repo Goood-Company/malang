@@ -1,5 +1,6 @@
 // types/database/entities.ts
-
+// 실제 DB에 박혀있는 DB 스키마
+// DB 스키마 변경이 필요할 경우, 이 파일을 직접 건드리지 말고 DUMMY_TYPE 만들어서 사용하기
 export interface User {
   id: string;
   user_name: string;

@@ -1,26 +1,23 @@
-import { DUMMY_QUESTION_LIST, DUMMY_WORD_LIST } from "@/dummy-data";
-import { useEffect, useState } from "react";
+import {
+  DUMMY_QUESTION_LIST,
+  DUMMY_WORD_LIST,
+  type DUMMY_QUESTION_TYPE,
+  type DUMMY_WORD_TYPE,
+} from "@/dummy-data";
+import { useState } from "react";
 import { useNavigate } from "react-router";
 
 export default function StudyPage2() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [currentPhase, setCurrentPhase] = useState(1);
-  const [currentCardIndex, setCurrentCardIndex] = useState(0);
+  const [currentPhase, setCurrentPhase] = useState(3);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState("");
+  const [shortAnswerInput, setShortAnswerInput] = useState("");
   const [showFeedback, setShowFeedback] = useState(false);
   const [correctCount, setCorrectCount] = useState(0);
   const [answeredQuestions, setAnsweredQuestions] = useState<
     {
-      question: {
-        id: string;
-        word_id: string;
-        type: string;
-        prompt: string;
-        choices: string[];
-        answer: string;
-        word: string;
-      };
+      question: DUMMY_QUESTION_TYPE;
+      word: DUMMY_WORD_TYPE;
       userAnswer: string;
       isCorrect: boolean;
     }[]
@@ -28,189 +25,75 @@ export default function StudyPage2() {
 
   const navigate = useNavigate();
 
-  const fetchFn = async () => {
-    try {
-      setIsLoading(true);
-      // 실제 API 호출 로직
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const currentQuestion = DUMMY_QUESTION_LIST[currentQuestionIndex];
+  const currentWord = DUMMY_WORD_LIST.find(
+    (word) => word.id === currentQuestion.word_id
+  );
 
-  useEffect(() => {
-    fetchFn();
-  }, []);
+  // 객관식/주관식 구분
+  const isMultipleChoice = currentQuestion.type.includes("_choice");
+  const isShortAnswer = currentQuestion.type.includes("_blank");
 
-  // 1페이즈: 카드 넘기기
-  const handleCardNavigation = (direction: "next" | "prev") => {
-    if (direction === "next") {
-      if (currentCardIndex < DUMMY_WORD_LIST.length - 1) {
-        setCurrentCardIndex(currentCardIndex + 1);
-      } else {
-        // 마지막 카드면 2페이즈로 자동 이동
-        setCurrentPhase(2);
-      }
-    } else {
-      if (currentCardIndex > 0) {
-        setCurrentCardIndex(currentCardIndex - 1);
-      }
-    }
-  };
-
-  // 2페이즈에서 3페이즈로 이동
-  const moveToPhase3 = () => {
-    setCurrentPhase(3);
-  };
-
-  // 3페이즈: 문제 답변 처리
-  const handleAnswerSelect = (answer: string) => {
+  const handleAnswerSubmit = () => {
     if (showFeedback) return;
 
-    setSelectedAnswer(answer);
-    setShowFeedback(true);
+    const userAnswer = isShortAnswer ? shortAnswerInput.trim() : selectedAnswer;
+    const correctAnswer = currentQuestion.answer.trim();
 
-    const currentQuestion = DUMMY_QUESTION_LIST[currentQuestionIndex];
-    const isCorrect = answer === currentQuestion.answer;
+    // 정답 비교 (대소문자 무시, 공백 제거)
+    const isCorrect =
+      userAnswer.toLowerCase().replace(/\s+/g, " ") ===
+      correctAnswer.toLowerCase().replace(/\s+/g, " ");
 
     if (isCorrect) {
       setCorrectCount(correctCount + 1);
     }
 
-    // 답변 기록
     setAnsweredQuestions([
       ...answeredQuestions,
       {
         question: currentQuestion,
-        userAnswer: answer,
+        word: currentWord!,
+        userAnswer,
         isCorrect,
       },
     ]);
+
+    setShowFeedback(true);
   };
 
-  // 다음 문제로 이동
   const handleNextQuestion = () => {
     if (currentQuestionIndex < DUMMY_QUESTION_LIST.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
       setSelectedAnswer("");
+      setShortAnswerInput("");
       setShowFeedback(false);
     } else {
-      // 마지막 문제면 결과 페이즈로
       setCurrentPhase(4);
     }
   };
 
-  // 다시 시작
   const handleRestart = () => {
     navigate("/");
   };
 
-  if (isLoading)
+  // 현재 사용자 답안이 정답인지 확인
+  const getCurrentUserAnswer = () => {
+    return isShortAnswer ? shortAnswerInput.trim() : selectedAnswer;
+  };
+
+  const isCurrentAnswerCorrect = () => {
+    const userAnswer = getCurrentUserAnswer();
+    const correctAnswer = currentQuestion.answer.trim();
     return (
-      <div className="flex justify-center items-center h-screen text-lg">
-        로딩중
-      </div>
+      userAnswer.toLowerCase().replace(/\s+/g, " ") ===
+      correctAnswer.toLowerCase().replace(/\s+/g, " ")
     );
+  };
 
-  // 1페이즈: 카드 형태
-  if (currentPhase === 1) {
-    const currentWord = DUMMY_WORD_LIST[currentCardIndex];
-
-    return (
-      <div className="max-w-md mx-auto  flex flex-col">
-        <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold mb-2">외우기 페이즈</h1>
-          <div className="text-lg text-gray-600">
-            {currentCardIndex + 1} / {DUMMY_WORD_LIST.length}
-          </div>
-        </div>
-
-        <div className="flex-1 flex items-center justify-center">
-          <div className="bg-white border-2 border-gray-200 rounded-lg p-8 w-full h-64 flex items-center justify-center shadow-lg">
-            <div className="text-center">
-              <div className="text-4xl font-bold text-gray-800 mb-2">
-                {currentWord.text}
-              </div>
-              <div className="text-lg text-gray-500">
-                {currentWord.phonetic}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex justify-between items-center mt-8">
-          <button
-            onClick={() => handleCardNavigation("prev")}
-            disabled={currentCardIndex === 0}
-            className="bg-red-500 hover:bg-red-600 disabled:bg-gray-300 text-white px-6 py-3 rounded-lg font-medium"
-          >
-            이전
-          </button>
-
-          <div className="bg-gray-200 px-4 py-2 rounded-lg">
-            {currentCardIndex + 1} / {DUMMY_WORD_LIST.length}
-          </div>
-
-          <button
-            onClick={() => handleCardNavigation("next")}
-            className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-medium"
-          >
-            {currentCardIndex === DUMMY_WORD_LIST.length - 1 ? "완료" : "다음"}
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  // 2페이즈: 리스트 형태
-  if (currentPhase === 2) {
-    return (
-      <div className="max-w-md mx-auto p-6  flex flex-col">
-        <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold mb-2">복습 페이즈</h1>
-          <div className="text-lg text-gray-600">단어 목록 확인</div>
-        </div>
-
-        <div className="flex-1 space-y-3 overflow-y-auto">
-          {DUMMY_WORD_LIST.map((word) => (
-            <div
-              key={word.id}
-              className="bg-white border border-gray-200 rounded-lg p-4 shadow"
-            >
-              <div className="flex justify-between items-center">
-                <div>
-                  <div className="text-lg font-semibold text-gray-800">
-                    {word.text}
-                  </div>
-                  <div className="text-sm text-gray-500">{word.phonetic}</div>
-                </div>
-                <div className="text-lg text-blue-600 font-medium">
-                  {word.definition}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div className="mt-8 flex justify-end">
-          <button
-            onClick={moveToPhase3}
-            className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-3 rounded-lg font-medium"
-          >
-            테스트 시작
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  // 3페이즈: 문제 풀이
   if (currentPhase === 3) {
-    const currentQuestion = DUMMY_QUESTION_LIST[currentQuestionIndex];
-
     return (
-      <div className="max-w-md mx-auto p-6  flex flex-col">
+      <div className="max-w-md mx-auto p-6 flex flex-col">
         <div className="text-center mb-8">
           <h1 className="text-2xl font-bold mb-2">테스트 페이즈</h1>
           <div className="text-lg text-gray-600">
@@ -219,53 +102,140 @@ export default function StudyPage2() {
         </div>
 
         <div className="flex-1">
+          {/* 단어 표시 카드 */}
           <div className="bg-white border-2 border-gray-200 rounded-lg p-6 mb-6 text-center">
-            <div className="text-lg text-gray-600 mb-2">
+            <div className="text-lg text-gray-600 mb-4">
               {currentQuestion.prompt}
             </div>
-            <div className="text-3xl font-bold text-gray-800">
-              {currentQuestion.word}
-            </div>
-          </div>
-
-          <div className="space-y-3">
-            {currentQuestion.choices.map((choice, index) => (
-              <button
-                key={index}
-                onClick={() => handleAnswerSelect(choice)}
-                disabled={showFeedback}
-                className={`w-full p-4 text-left border-2 rounded-lg font-medium transition-colors ${
-                  showFeedback
-                    ? choice === currentQuestion.answer
-                      ? "bg-green-100 border-green-500 text-green-700"
-                      : choice === selectedAnswer
-                      ? "bg-red-100 border-red-500 text-red-700"
-                      : "bg-gray-100 border-gray-300 text-gray-500"
-                    : "bg-white border-gray-300 hover:border-blue-400 hover:bg-blue-50"
-                }`}
-              >
-                {choice}
-              </button>
-            ))}
-          </div>
-
-          {showFeedback && (
-            <div className="mt-6 text-center">
-              <div
-                className={`text-lg font-bold mb-4 ${
-                  selectedAnswer === currentQuestion.answer
-                    ? "text-green-600"
-                    : "text-red-600"
-                }`}
-              >
-                {selectedAnswer === currentQuestion.answer
-                  ? "정답!"
-                  : "틀렸습니다"}
+            {currentWord && (
+              <div>
+                <div className="text-3xl font-bold text-gray-800 mb-2">
+                  {currentWord.text}
+                </div>
+                {currentWord.phonetic && (
+                  <div className="text-sm text-gray-500 mb-2">
+                    {currentWord.phonetic}
+                  </div>
+                )}
+                {currentWord.example_sentence && (
+                  <div className="text-sm text-gray-600 italic mt-3 p-3 bg-gray-50 rounded">
+                    "{currentWord.example_sentence}"
+                  </div>
+                )}
               </div>
+            )}
+          </div>
+
+          {/* 객관식 */}
+          {isMultipleChoice && currentQuestion.choices && (
+            <div className="space-y-3">
+              {currentQuestion.choices.map((choice, index) => (
+                <button
+                  key={index}
+                  onClick={() => {
+                    if (!showFeedback) {
+                      setSelectedAnswer(choice);
+                    }
+                  }}
+                  disabled={showFeedback}
+                  className={`w-full p-4 text-left border-2 rounded-lg font-medium transition-colors ${
+                    showFeedback
+                      ? choice === currentQuestion.answer
+                        ? "bg-green-100 border-green-500 text-green-700"
+                        : choice === selectedAnswer && !isCurrentAnswerCorrect()
+                        ? "bg-red-100 border-red-500 text-red-700"
+                        : "bg-gray-100 border-gray-300 text-gray-500"
+                      : selectedAnswer === choice
+                      ? "bg-blue-100 border-blue-500 text-blue-700"
+                      : "bg-white border-gray-300 hover:border-blue-400 hover:bg-blue-50"
+                  }`}
+                >
+                  {choice}
+                </button>
+              ))}
+
+              {/* 객관식 제출 버튼 */}
+              {!showFeedback && selectedAnswer && (
+                <button
+                  onClick={handleAnswerSubmit}
+                  className="w-full bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-medium mt-4"
+                >
+                  제출
+                </button>
+              )}
+            </div>
+          )}
+
+          {/* 주관식 */}
+          {isShortAnswer && (
+            <div className="space-y-4">
+              <input
+                type="text"
+                value={shortAnswerInput}
+                onChange={(e) => setShortAnswerInput(e.target.value)}
+                disabled={showFeedback}
+                className={`w-full border-2 rounded-lg px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  showFeedback
+                    ? isCurrentAnswerCorrect()
+                      ? "border-green-500 bg-green-50"
+                      : "border-red-500 bg-red-50"
+                    : "border-gray-300"
+                }`}
+                placeholder="정답을 입력하세요"
+                onKeyPress={(e) => {
+                  if (
+                    e.key === "Enter" &&
+                    !showFeedback &&
+                    shortAnswerInput.trim() !== ""
+                  ) {
+                    handleAnswerSubmit();
+                  }
+                }}
+              />
+              <button
+                onClick={handleAnswerSubmit}
+                disabled={showFeedback || shortAnswerInput.trim() === ""}
+                className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-white px-6 py-3 rounded-lg font-medium"
+              >
+                제출
+              </button>
+            </div>
+          )}
+
+          {/* 피드백 섹션 */}
+          {showFeedback && (
+            <div className="mt-6">
+              <div className="text-center mb-4">
+                <div
+                  className={`text-lg font-bold mb-2 ${
+                    isCurrentAnswerCorrect() ? "text-green-600" : "text-red-600"
+                  }`}
+                >
+                  {isCurrentAnswerCorrect() ? "정답!" : "틀렸습니다"}
+                </div>
+
+                {!isCurrentAnswerCorrect() && (
+                  <div className="text-gray-700">
+                    <span className="font-medium">정답: </span>
+                    <span className="text-green-600 font-bold">
+                      {currentQuestion.answer}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* 설명 표시 */}
+              {currentQuestion.explanation && (
+                <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mb-4">
+                  <div className="text-sm text-blue-800">
+                    <strong>설명:</strong> {currentQuestion.explanation}
+                  </div>
+                </div>
+              )}
 
               <button
                 onClick={handleNextQuestion}
-                className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-3 rounded-lg font-medium"
+                className="w-full bg-blue-500 hover:bg-blue-600 text-white px-8 py-3 rounded-lg font-medium"
               >
                 {currentQuestionIndex === DUMMY_QUESTION_LIST.length - 1
                   ? "결과 보기"
@@ -278,14 +248,13 @@ export default function StudyPage2() {
     );
   }
 
-  // 4페이즈: 결과 화면
   if (currentPhase === 4) {
     const accuracy = Math.round(
       (correctCount / DUMMY_QUESTION_LIST.length) * 100
     );
 
     return (
-      <div className="max-w-md mx-auto p-6  flex flex-col">
+      <div className="max-w-md mx-auto p-6 flex flex-col">
         <div className="text-center mb-8">
           <h1 className="text-2xl font-bold mb-2">학습 완료!</h1>
         </div>
@@ -321,16 +290,28 @@ export default function StudyPage2() {
             {answeredQuestions.filter((q) => !q.isCorrect).length === 0 ? (
               <div className="text-gray-600">모든 문제를 맞혔습니다!</div>
             ) : (
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {answeredQuestions
                   .filter((q) => !q.isCorrect)
                   .map((q, index) => (
-                    <div key={index} className="text-sm">
-                      <span className="font-medium">{q.question.word}</span>
-                      <span className="text-gray-600">
-                        {" "}
-                        - 정답: {q.question.answer}
-                      </span>
+                    <div
+                      key={index}
+                      className="bg-white p-3 rounded border text-sm"
+                    >
+                      <div className="font-medium text-gray-800 mb-1">
+                        {q.word.text} ({q.word.definition_kor})
+                      </div>
+                      <div className="text-gray-600 mb-1">
+                        문제: {q.question.prompt}
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-green-600">
+                          정답: {q.question.answer}
+                        </span>
+                        <span className="text-red-500">
+                          입력: {q.userAnswer || "(없음)"}
+                        </span>
+                      </div>
                     </div>
                   ))}
               </div>
@@ -342,7 +323,7 @@ export default function StudyPage2() {
           onClick={handleRestart}
           className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-3 rounded-lg font-medium w-full"
         >
-          다시 학습하기
+          학습 완료
         </button>
       </div>
     );
