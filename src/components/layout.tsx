@@ -1,14 +1,22 @@
 import { Link, useLocation, Outlet } from "react-router";
 import { cn } from "@/lib/utils";
+import StudyBottomSheet from "./study-bottom-sheet";
+import { useState } from "react";
 
 export default function Layout() {
   const location = useLocation();
 
+  const [isBottomSheetOn, setIsBottomSheetOn] = useState<boolean>(false);
+
   const tabs = [
     { path: "/", label: "홈", icon: "🏠" },
-    { path: "/study", label: "학습", icon: "📚" },
+    { path: "/study-1", label: "학습", icon: "📚" },
     { path: "/setting", label: "설정", icon: "⚙️" },
   ];
+
+  const handleClickMiddle = () => {
+    setIsBottomSheetOn(true);
+  };
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -21,28 +29,41 @@ export default function Layout() {
             const isActive = location.pathname === tab.path;
             const isMiddle = index === 1; // 가운데 탭
 
+            const baseClasses = cn(
+              "flex flex-col items-center justify-center",
+              isMiddle
+                ? "absolute -top-4 transform -translate-y-1/2 bg-blue-500 text-white w-16 h-16 rounded-full shadow-lg z-10"
+                : "w-full h-full",
+              isActive && !isMiddle && "text-blue-600",
+              !isActive && !isMiddle && "text-gray-600"
+            );
+
+            if (isMiddle) {
+              return (
+                <button
+                  type="button"
+                  key={tab.path}
+                  onClick={handleClickMiddle}
+                  className={baseClasses}
+                >
+                  <span className="text-2xl">{tab.icon}</span>
+                </button>
+              );
+            }
+
             return (
-              <Link
-                key={tab.path}
-                to={tab.path}
-                className={cn(
-                  "flex flex-col items-center justify-center",
-                  isMiddle
-                    ? "absolute -top-4 transform -translate-y-1/2 bg-blue-500 text-white w-16 h-16 rounded-full shadow-lg z-10"
-                    : "w-full h-full",
-                  isActive && !isMiddle && "text-blue-600",
-                  !isActive && !isMiddle && "text-gray-600"
-                )}
-              >
-                <span className={cn("text-xl", isMiddle && "text-2xl")}>
-                  {tab.icon}
-                </span>
-                {!isMiddle && <span className="text-xs mt-1">{tab.label}</span>}
+              <Link key={tab.path} to={tab.path} className={baseClasses}>
+                <span className="text-xl">{tab.icon}</span>
+                <span className="text-xs mt-1">{tab.label}</span>
               </Link>
             );
           })}
         </div>
       </nav>
+      <StudyBottomSheet
+        isOpen={isBottomSheetOn}
+        close={() => setIsBottomSheetOn(false)}
+      />
     </div>
   );
 }

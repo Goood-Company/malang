@@ -1,4 +1,3 @@
-
 import Progress from "@/components/ui/progress";
 import { toast } from "sonner";
 import Skeleton from "@/components/ui/skeleton";
@@ -13,10 +12,7 @@ import Card, {
   CardTitle,
 } from "@/components/ui/card";
 import Input from "@/components/ui/input";
-
-
 import { useState } from "react";
-
 import Modal from "@/components/ui/modal";
 import Button from "@/components/ui/button";
 import BottomSheet from "@/components/ui/bottom-sheet";

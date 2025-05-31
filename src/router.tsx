@@ -4,7 +4,8 @@ import { BookDetailPage } from "./pages/book-detail";
 import TestColor from "./pages/test-color";
 import SettingPage from "./pages/setting";
 import BookPage from "./pages/book";
-import StudyPage from "./pages/study-1";
+import StudyPage1 from "./pages/study-1";
+import StudyPage2 from "./pages/study-2";
 import Layout from "./components/layout";
 
 export default function Router() {
@@ -13,12 +14,13 @@ export default function Router() {
       <Routes>
         <Route element={<Layout />}>
           <Route path="/" element={<BookPage />} />
-          <Route path="/study" element={<StudyPage />} />
           <Route path="/setting" element={<SettingPage />} />
+          <Route path="/bookdetail/:bookId" element={<BookDetailPage />} />
+          <Route path="/test" element={<TestPage />} />
+          <Route path="/test-color" element={<TestColor />} />
         </Route>
-        <Route path="/bookdetail/:bookId" element={<BookDetailPage />} />
-        <Route path="/test" element={<TestPage />} />
-        <Route path="/test-color" element={<TestColor />} />
+        <Route path="/study-1" element={<StudyPage1 />} />
+        <Route path="/study-2" element={<StudyPage2 />} />
       </Routes>
     </BrowserRouter>
   );
