@@ -4,10 +4,10 @@ import { BookDetailPage } from "./pages/book-detail";
 import TestColor from "./pages/test-color";
 import SettingPage from "./pages/setting";
 import BookPage from "./pages/book";
-import StudyPage from "./pages/study";
-import { Layout } from "./components/layout";
+import StudyPage from "./pages/study-1";
+import Layout from "./components/layout";
 
-export const Router: React.FC = () => {
+export default function Router() {
   return (
     <BrowserRouter>
       <Routes>
@@ -22,4 +22,4 @@ export const Router: React.FC = () => {
       </Routes>
     </BrowserRouter>
   );
-};
+}

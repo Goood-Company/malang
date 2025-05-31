@@ -4,7 +4,6 @@ import { supabase } from "../lib/supabase/client";
 import { customQuery } from "./base";
 
 // 전체 단어장 리스트 가져오기
-
 export const fetchAllBookList = async (): Promise<
   ComposedEntity.BookSummary[]
 > => {

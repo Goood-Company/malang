@@ -2,7 +2,7 @@ import { DUMMY_QUESTION_LIST, DUMMY_WORD_LIST } from "@/dummy-data";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 
-function StudyPage() {
+export default function StudyPage2() {
   const [isLoading, setIsLoading] = useState(false);
   const [currentPhase, setCurrentPhase] = useState(1);
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
@@ -350,5 +350,3 @@ function StudyPage() {
 
   return null;
 }
-
-export default StudyPage;

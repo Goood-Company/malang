@@ -1,7 +1,7 @@
 import { Link, useLocation, Outlet } from "react-router";
 import { cn } from "@/lib/utils";
 
-export const Layout = () => {
+export default function Layout() {
   const location = useLocation();
 
   const tabs = [
@@ -45,4 +45,4 @@ export const Layout = () => {
       </nav>
     </div>
   );
-};
+}
