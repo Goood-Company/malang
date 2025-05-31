@@ -5,7 +5,7 @@ import { XIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
-function Modal({
+export default function Modal({
   ...props
 }: React.ComponentProps<typeof ModalPrimitive.Root> & {
   showCloseButton?: boolean;
@@ -78,5 +78,3 @@ function ModalContent({
     </ModalPortal>
   );
 }
-
-export default Modal;
