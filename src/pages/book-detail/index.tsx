@@ -1,14 +1,16 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 
-import { getBookWithWordList } from "../api/book";
-import type { Entity } from "@/types/database";
+import { getBookWithWordList } from "../../api/book";
+import type { ComposedEntity } from "@/types/database";
 
 export const BookDetailPage: React.FC = () => {
   const { bookId } = useParams();
   const navigation = useNavigate();
 
-  const [book, setBook] = useState<Entity.BookWithWordList | null>(null);
+  const [book, setBook] = useState<ComposedEntity.BookWithWordList | null>(
+    null
+  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
@@ -197,7 +199,7 @@ export const BookDetailPage: React.FC = () => {
 };
 
 interface WordCardProps {
-  word: Entity.WordWithDefinitionList;
+  word: ComposedEntity.WordWithDefinitionList;
   showAnswer?: boolean;
 }
 

@@ -1,11 +1,11 @@
 import { BrowserRouter, Route, Routes } from "react-router";
-import TestPage from "./pages/TestPage";
-import { BookDetailPage } from "./pages/BookDetailPage";
-import TestColor from "./pages/TestColor";
-import SettingPage from "./pages/SettingPage";
-import BookPage from "./pages/BookPage";
-import StudyPage from "./pages/StudyPage";
-import { Layout } from "./components/Layout";
+import TestPage from "./pages/test";
+import { BookDetailPage } from "./pages/book-detail";
+import TestColor from "./pages/test-color";
+import SettingPage from "./pages/setting";
+import BookPage from "./pages/book";
+import StudyPage from "./pages/study";
+import { Layout } from "./components/layout";
 
 export const Router: React.FC = () => {
   return (
