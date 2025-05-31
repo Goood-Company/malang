@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
-import type { BookWithWordList, WordWithMeaningList } from "../types/database";
-import { getBookWithWordList } from "../api/word";
+
+import { getBookWithWordList } from "../api/book";
+import type { Entity } from "@/types/database";
 
 export const BookDetailPage: React.FC = () => {
   const { bookId } = useParams();
   const navigation = useNavigate();
 
-  const [book, setBook] = useState<BookWithWordList | null>(null);
+  const [book, setBook] = useState<Entity.BookWithWordList | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
@@ -166,22 +167,22 @@ export const BookDetailPage: React.FC = () => {
               </div>
 
               <div className="space-y-2">
-                {word.meanings.map((meaning) => (
+                {word.definitions.map((definition) => (
                   <div
-                    key={meaning.id}
+                    key={definition.id}
                     className="border-l-2 border-blue-200 pl-3"
                   >
                     <div className="flex items-start gap-2 mb-1">
                       <span className="text-xs font-medium text-blue-600 bg-blue-100 px-2 py-1 rounded">
-                        {meaning.part_of_speech}
+                        {definition.part_of_speech}
                       </span>
                       <p className="text-sm text-gray-900 flex-1">
-                        {meaning.definition}
+                        {definition.definition}
                       </p>
                     </div>
-                    {meaning.example_sentence && (
+                    {definition.example_sentence && (
                       <p className="text-xs text-gray-600 italic ml-2">
-                        예: {meaning.example_sentence}
+                        예: {definition.example_sentence}
                       </p>
                     )}
                   </div>
@@ -196,7 +197,7 @@ export const BookDetailPage: React.FC = () => {
 };
 
 interface WordCardProps {
-  word: WordWithMeaningList;
+  word: Entity.WordWithDefinitionList;
   showAnswer?: boolean;
 }
 
@@ -255,19 +256,22 @@ export const WordCard: React.FC<WordCardProps> = ({
           </h3>
 
           <div className="space-y-3">
-            {word.meanings.map((meaning) => (
-              <div key={meaning.id} className="border-b border-blue-200 pb-2">
+            {word.definitions.map((definition) => (
+              <div
+                key={definition.id}
+                className="border-b border-blue-200 pb-2"
+              >
                 <div className="flex items-start gap-2">
                   <span className="text-sm font-medium text-blue-600 bg-blue-100 px-2 py-1 rounded">
-                    {meaning.part_of_speech}
+                    {definition.part_of_speech}
                   </span>
                   <div className="flex-1">
                     <p className="text-sm font-medium text-gray-900 mb-1">
-                      {meaning.definition}
+                      {definition.definition}
                     </p>
-                    {meaning.example_sentence && (
+                    {definition.example_sentence && (
                       <p className="text-xs text-gray-600 italic">
-                        예: {meaning.example_sentence}
+                        예: {definition.example_sentence}
                       </p>
                     )}
                   </div>

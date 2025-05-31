@@ -4,7 +4,7 @@ import {
   upsertUserProgress,
   getWordListToReview,
 } from "../api/user";
-import type { BookSummary } from "../types/database";
+import type { BookSummary } from "../types/database/table";
 
 const MOCK_USER_ID = "00000000-0000-4000-8000-000000000001"; // 실제 존재하는 사용자 UUID로 대체
 const MOCK_BOOK_ID = "10000000-0000-4000-8000-000000000001"; // 테스트용 단어장 UUID

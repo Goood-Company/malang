@@ -1,28 +1,32 @@
+import { ComposedEntity } from "@/types/database";
 import { supabase } from "../lib/supabase/client";
-import type {
-  BookSummary,
-  BookWithWordCount,
-  BookWithWordList,
-  WordWithMeaningList,
-} from "../types/database";
+
+import { customQuery } from "./base";
 
 // 전체 단어장 리스트 가져오기
-export const getPublicBookList = async (): Promise<BookSummary[]> => {
-  const { data, error } = await supabase
-    .from("books")
-    .select(
-      `
+
+export const fetchAllBookList = async (): Promise<
+  ComposedEntity.BookSummary[]
+> => {
+  const { data, error } = await customQuery<ComposedEntity.BookWithWordCount[]>(
+    (db) =>
+      db
+        .from("books")
+        .select(
+          `
         *,
         book_words(count)
       `
-    )
-    .eq("is_public", true)
-    .order("created_at", { ascending: false })
-    .overrideTypes<Array<BookWithWordCount>, { merge: false }>();
+        )
+        .eq("is_public", true)
+        .order("created_at", { ascending: false })
+  );
 
   if (error) {
     throw new Error(`단어장 목록을 가져오는데 실패했습니다: ${error.message}`);
   }
+
+  if (!data) return [];
 
   return data.map((book) => ({
     ...book,
@@ -34,7 +38,7 @@ export const getPublicBookList = async (): Promise<BookSummary[]> => {
 // 단어장 및 그 단어들을 한번에 가져오기
 export const getBookWithWordList = async (
   bookId: string
-): Promise<BookWithWordList | null> => {
+): Promise<ComposedEntity.BookWithWordList | null> => {
   // 먼저 단어장 정보를 가져옵니다
   const { data: bookData, error: bookError } = await supabase
     .from("books")
@@ -52,32 +56,38 @@ export const getBookWithWordList = async (
     .select(
       `
         words(*,
-          meanings(*)
+          definitions(*)
         )
       `
     )
     .eq("book_id", bookId)
     .order("order", { ascending: true })
-    .overrideTypes<Array<{ words: WordWithMeaningList }>, { merge: false }>();
+    .overrideTypes<
+      Array<{ words: ComposedEntity.WordWithDefinitionList }>,
+      { merge: false }
+    >();
 
   if (wordsError) {
     throw new Error(`단어를 가져오는데 실패했습니다: ${wordsError.message}`);
   }
 
-  const wordsWithMeanings: WordWithMeaningList[] = wordsData.map((item) => ({
-    ...item.words,
-    meanings: item.words.meanings.sort((a, b) => a.order - b.order),
-  }));
+  const wordsWithDefinitions: ComposedEntity.WordWithDefinitionList[] =
+    wordsData.map((item) => ({
+      ...item.words,
+      definitions: item.words.definitions.sort((a, b) => a.order - b.order),
+    }));
 
   return {
     ...bookData,
-    words: wordsWithMeanings,
+    words: wordsWithDefinitions,
   };
 };
 
 // param : 검색어
 // 단어장 검색
-export const searchBooks = async (query: string): Promise<BookSummary[]> => {
+export const searchBooks = async (
+  query: string
+): Promise<ComposedEntity.BookSummary[]> => {
   const { data, error } = await supabase
     .from("books")
     .select(

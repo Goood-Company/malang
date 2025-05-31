@@ -1,10 +1,10 @@
+import type { ComposedEntity } from "@/types/database";
 import { supabase } from "../lib/supabase/client";
-import type { UserBookWithWordCount, BookSummary } from "../types/database";
 
 // 유저 단어장 목록을 가져오기
 export const getUserBookList = async (
   userId: string
-): Promise<BookSummary[]> => {
+): Promise<ComposedEntity.BookSummary[]> => {
   const { data, error } = await supabase
     .from("user_books")
     .select(
@@ -16,7 +16,10 @@ export const getUserBookList = async (
     )
     .eq("user_id", userId)
     .order("selected_at", { ascending: false })
-    .overrideTypes<Array<UserBookWithWordCount>, { merge: false }>();
+    .overrideTypes<
+      Array<ComposedEntity.UserBookWithWordCount>,
+      { merge: false }
+    >();
   if (error) {
     throw new Error(
       `사용자 단어장을 가져오는데 실패했습니다: ${error.message}`

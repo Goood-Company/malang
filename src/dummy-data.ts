@@ -1,0 +1,86 @@
+// 더미 데이터
+export const DUMMY_WORD_LIST = [
+  {
+    id: "1",
+    text: "apple",
+    phonetic: "/ˈæpəl/",
+    created_at: "2024-01-01",
+    definition: "사과",
+  },
+  {
+    id: "2",
+    text: "banana",
+    phonetic: "/bəˈnænə/",
+    created_at: "2024-01-01",
+    definition: "바나나",
+  },
+  {
+    id: "3",
+    text: "cat",
+    phonetic: "/kæt/",
+    created_at: "2024-01-01",
+    definition: "고양이",
+  },
+  {
+    id: "4",
+    text: "dog",
+    phonetic: "/dɔːɡ/",
+    created_at: "2024-01-01",
+    definition: "개",
+  },
+  {
+    id: "5",
+    text: "house",
+    phonetic: "/haʊs/",
+    created_at: "2024-01-01",
+    definition: "집",
+  },
+];
+
+export const DUMMY_QUESTION_LIST = [
+  {
+    id: "1",
+    word_id: "1",
+    type: "eng_to_kor_choice",
+    prompt: "다음 단어의 뜻은?",
+    choices: ["사과", "바나나", "포도", "딸기"],
+    answer: "사과",
+    word: "apple",
+  },
+  {
+    id: "2",
+    word_id: "2",
+    type: "eng_to_kor_choice",
+    prompt: "다음 단어의 뜻은?",
+    choices: ["바나나", "오렌지", "키위", "망고"],
+    answer: "바나나",
+    word: "banana",
+  },
+  {
+    id: "3",
+    word_id: "3",
+    type: "eng_to_kor_choice",
+    prompt: "다음 단어의 뜻은?",
+    choices: ["개", "고양이", "새", "물고기"],
+    answer: "고양이",
+    word: "cat",
+  },
+  {
+    id: "4",
+    word_id: "4",
+    type: "eng_to_kor_choice",
+    prompt: "다음 단어의 뜻은?",
+    choices: ["고양이", "개", "토끼", "햄스터"],
+    answer: "개",
+    word: "dog",
+  },
+  {
+    id: "5",
+    word_id: "5",
+    type: "eng_to_kor_choice",
+    prompt: "다음 단어의 뜻은?",
+    choices: ["학교", "병원", "집", "상점"],
+    answer: "집",
+    word: "house",
+  },
+];
